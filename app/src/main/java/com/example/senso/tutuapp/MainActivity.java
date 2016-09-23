@@ -36,6 +36,10 @@ public class MainActivity extends Activity {
                         Intent wIntent = new Intent(MainActivity.this, WorkActivity.class);
                         startActivity(wIntent);
                         break;
+                    case 1:
+                        Intent aIntent = new Intent(MainActivity.this, AboutActivity.class);
+                        startActivity(aIntent);
+                        break;
                 }
 
 

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Tutuapp</string>
+    <string name="copyright">Тестовая программа для компании ТуТу.ру, разрешается полный или частичный копирайт при указании ссылки на gitHub (https://github.com/tutu-ru/hire_android_test)</string>
+    <string name="version">Версия программы : 0.1 </string>
 </resources>
