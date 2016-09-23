@@ -233,9 +233,15 @@ public class WorkActivity extends Activity {
                  String sss = textView.getText().toString();
                  String[]myStrings = sss.split(",");
                  String cityTitleView = myStrings[1];
-
+                 JSONArray jsonArray = null;
                  JSONObject obj = new JSONObject(loadJSONFromAsset());
-                 JSONArray jsonArray = obj.getJSONArray("citiesFrom");
+                 if(groupPosition == 0) {
+                     jsonArray = obj.getJSONArray("citiesFrom");
+                 }
+                 else if(groupPosition == 1)
+                 {
+                     jsonArray = obj.getJSONArray("citiesTo");
+                 }
 
                  for (int i = 0; i < jsonArray.length(); i++) {
                      JSONObject jsonObject_in = jsonArray.getJSONObject(i);//Входим поочёредно в каждый объект и смотрим его свойства
