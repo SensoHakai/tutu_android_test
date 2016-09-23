@@ -98,6 +98,7 @@ public class WorkActivity extends Activity {
                         listDataHeader.set(groupPosition,"Станция прибытия");
                         break;
                     case 2:
+                        //Вызов календаря для даты
                         DatePickerDialog _date;
                         _date = new DatePickerDialog(WorkActivity.this,dateCallback,2016, 10, 9);
                         _date.show();
@@ -108,9 +109,8 @@ public class WorkActivity extends Activity {
         });
 
 
-        //Подулючаем SearchView
+        //Подключаем SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-
         searchView = (SearchView) findViewById(R.id.searcher);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false);
@@ -138,6 +138,7 @@ public class WorkActivity extends Activity {
         });
     }
 
+    //Достаём нужные нам данные из json - файла и испольщуем их для обработки кликов
     public void json(String where, View v, int groupPosition, List<String> array, ListIterator<String> lit, int size)
     {
         try {
@@ -152,10 +153,11 @@ public class WorkActivity extends Activity {
             JSONObject obj = new JSONObject(loadJSONFromAsset()); //Загружаем json файл из папки assets для создания объекта JSON. С помощью него можно будет работать с данным типом данных(CitiesTo/For)
             JSONArray jsonArray = obj.getJSONArray(where);//Создаём массив JSON, в который включаются все объекты типа citiesFrom
 
+            //Входим поочёредно в каждый объект и смотрим его свойства
             for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject_in = jsonArray.getJSONObject(i);//Входим поочёредно в каждый объект и смотрим его свойства
+                JSONObject jsonObject_in = jsonArray.getJSONObject(i);
                 String city_Title = jsonObject_in.getString("cityTitle");
-                if (cityTitleView.equals(city_Title)) {
+                if (cityTitleView.equals(city_Title)) {//Ищем нужные данные в json файле
                     String country_Title = jsonObject_in.getString("countryTitle");
                     String district_Title = jsonObject_in.getString("districtTitle");
                     String region_Title = jsonObject_in.getString("regionTitle");
@@ -167,7 +169,7 @@ public class WorkActivity extends Activity {
                         JSONObject jsonObject = jsonArray1.getJSONObject(j);
                         String station_Title = jsonObject.getString("stationTitle");
                         String city_Title1 = jsonObject.getString("cityTitle");
-                        s = s + station_Title + "(" + city_Title1 + ")" + "   ";
+                        s = s + station_Title + "(" + city_Title1 + ")" + "   "; //Строка для помещения в ListView и отображения всех станций для данного пункта назначения
                     }
                     //Обновляем данные в listView
                     textView.setText(s);
@@ -202,11 +204,12 @@ public class WorkActivity extends Activity {
     }
 
 
+    //"Прослушка" для определения действий после выбора даты из календаря
     private DatePickerDialog.OnDateSetListener dateCallback = new DatePickerDialog.OnDateSetListener() {
 
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
+            //Помещаем дату в нужную нам строку
             listDataHeader.set(2,"Дата отправления : " + dayOfMonth+"/"+  ++monthOfYear +"/"+  year);
             listAdapter.notifyDataSetChanged();
         }
@@ -227,12 +230,14 @@ public class WorkActivity extends Activity {
          if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
              menu.setHeaderTitle("Выбор станций");
              try {
-                 View view = listAdapter.getChildView(groupPosition,childPosition,FALSE,null,null);
+                 View view = listAdapter.getChildView(groupPosition,childPosition,FALSE,null,null);//View для нажатого нами child
                  expListView.getChildAt(expListView.getFirstVisiblePosition());
                  TextView textView = (TextView) view.findViewById(R.id.lgroupItem);
                  String sss = textView.getText().toString();
+                 //Выбираем требуемый город, чтобы отобразить все станции, которые ему принадлежат
                  String[]myStrings = sss.split(",");
                  String cityTitleView = myStrings[1];
+
                  JSONArray jsonArray = null;
                  JSONObject obj = new JSONObject(loadJSONFromAsset());
                  if(groupPosition == 0) {
@@ -249,6 +254,7 @@ public class WorkActivity extends Activity {
                      if (cityTitleView.equals(city_Title)) {
                          JSONArray jsonArray1 = jsonObject_in.getJSONArray("stations");//Входим в массив станций внутри объекта типа citiesFrom
                          for (int j = 0; j < jsonArray1.length(); j++) {
+                             //Заполняем сведения о станции
                              JSONObject jsonObject = jsonArray1.getJSONObject(j);
                              String station_Title = jsonObject.getString("stationTitle");
                              String city_Title_child = jsonObject.getString("cityTitle");
@@ -357,6 +363,7 @@ public class WorkActivity extends Activity {
                 for(int i = 0; i < jsonArray.length();i++)
                 {
                     JSONObject jsonObject_in = jsonArray.getJSONObject(i);
+                    //Сведения об интересующем нас пункте
                     String country_Title = jsonObject_in.getString("countryTitle");
                     String city_Title = jsonObject_in.getString("cityTitle");
                     String district_Title = jsonObject_in.getString("districtTitle");
@@ -375,6 +382,7 @@ public class WorkActivity extends Activity {
                 for(int i = 0; i < jsonArray.length();i++)
                 {
                     JSONObject jsonObject_in = jsonArray.getJSONObject(i);
+                    //Сведения об интересующем нас пункте
                     String country_Title = jsonObject_in.getString("countryTitle");
                     String city_Title = jsonObject_in.getString("cityTitle");
                     String district_Title = jsonObject_in.getString("districtTitle");
@@ -387,15 +395,16 @@ public class WorkActivity extends Activity {
                 e.printStackTrace();
             }
 
-
+            //Передача данные в HashMap в форме ключ - данные. В данном случае listDataHeader.get(0) - наш ключ
             listDataChild.put(listDataHeader.get(0), departStation); // Header, Child
             listDataChild.put(listDataHeader.get(1), arriveStation);
             listDataChild.put(listDataHeader.get(2), data);
 
+            //Устанавливаем адаптер
             listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
 
-            // Устанавлиаем listAdapter
             expListView.setAdapter(listAdapter);
+            //Регистрируем expListView для пользования контексными меню
             registerForContextMenu(expListView);
 
 
