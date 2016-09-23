@@ -317,7 +317,7 @@ public class WorkActivity extends Activity {
             int i = 0;
             int y = listAdapter.getChildrenCount(count);
             for (; i < y; i++) {
-                if (!listDataChild.get(listDataHeader.get(count)).get(i).contains(textToSearch)) {
+                if (!listDataChild.get(listDataHeader.get(count)).get(i).toLowerCase().contains(textToSearch.toLowerCase())) {
                     listDataChild.get(listDataHeader.get(count)).remove(i);
                     i--;
                     y--;
